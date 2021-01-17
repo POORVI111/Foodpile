@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,6 +8,16 @@ import java.text.MessageFormat;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import net.proteanit.sql.DbUtils;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.jdbc.JDBCCategoryDataset;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -14,6 +25,10 @@ import net.proteanit.sql.DbUtils;
  * and open the template in the editor.
  */
 
+/**
+ *
+ * @author ASUS
+ */
 /**
  *
  * @author ASUS
@@ -89,7 +104,7 @@ public class home extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        search = new javax.swing.JTextField();
+        category_search = new javax.swing.JTextField();
         SearchButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -112,6 +127,17 @@ public class home extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         insert = new javax.swing.JButton();
         jProgressBar1 = new javax.swing.JProgressBar();
+        PieChart = new javax.swing.JButton();
+        BarChart = new javax.swing.JButton();
+        QueryChart = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        name_search = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        price_search_min = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        price_search_max = new javax.swing.JTextField();
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -231,6 +257,47 @@ public class home extends javax.swing.JFrame {
         jProgressBar1.setForeground(new java.awt.Color(51, 255, 0));
         jProgressBar1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
+        PieChart.setText("PieChart");
+        PieChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PieChartActionPerformed(evt);
+            }
+        });
+
+        BarChart.setText("BarChart");
+        BarChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BarChartActionPerformed(evt);
+            }
+        });
+
+        QueryChart.setText("QueryChart");
+        QueryChart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                QueryChartActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setForeground(new java.awt.Color(240, 240, 240));
+        jLabel8.setText("Name:");
+
+        price_search_min.setText("0");
+
+        jLabel9.setForeground(new java.awt.Color(240, 240, 240));
+        jLabel9.setText("Price:");
+
+        jLabel10.setForeground(new java.awt.Color(240, 240, 240));
+        jLabel10.setText("Category:");
+
+        jLabel11.setForeground(new java.awt.Color(240, 240, 240));
+        jLabel11.setText("-");
+
+        price_search_max.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                price_search_maxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -259,52 +326,83 @@ public class home extends javax.swing.JFrame {
                             .addComponent(price)
                             .addComponent(quantity)
                             .addComponent(threshold))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(sort)
-                                        .addGap(151, 151, 151)
-                                        .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(SearchButton))
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(22, 22, 22))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton3)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton1)
-                                .addGap(35, 35, 35))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(jButton2)
-                                .addGap(42, 42, 42))))
+                                .addGap(42, 42, 42))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(QueryChart)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jButton3)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jButton1)))
+                                .addGap(35, 35, 35))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(35, 35, 35))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(update)
                         .addGap(45, 45, 45)
                         .addComponent(insert)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 258, Short.MAX_VALUE)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel8)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(sort)
+                            .addComponent(name_search, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(price_search_min, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(price_search_max, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel10)
+                                .addGap(18, 18, 18)
+                                .addComponent(category_search, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(78, 78, 78))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(78, 78, 78)
+                                .addComponent(SearchButton)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(651, 651, 651))
+                .addGap(0, 36, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(651, 651, 651))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(PieChart)
+                        .addGap(34, 34, 34)
+                        .addComponent(BarChart)
+                        .addGap(219, 219, 219))))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(452, 452, 452)
+                .addComponent(jLabel7)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jButton2)
-                .addGap(39, 39, 39)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(sort))
-                    .addComponent(SearchButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addGap(4, 4, 4)
+                        .addComponent(jLabel7)
+                        .addGap(85, 85, 85)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(id, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -327,10 +425,34 @@ public class home extends javax.swing.JFrame {
                         .addGap(57, 57, 57)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6)
-                            .addComponent(threshold, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(2, 2, 2)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                            .addComponent(threshold, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(name_search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9)
+                            .addComponent(price_search_min, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(category_search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel11)
+                            .addComponent(price_search_max, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(25, 25, 25)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(sort)
+                            .addComponent(SearchButton))
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(PieChart)
+                    .addComponent(BarChart)
+                    .addComponent(QueryChart))
+                .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(delete)
                     .addComponent(update)
@@ -369,9 +491,12 @@ public class home extends javax.swing.JFrame {
         
         try {
             stmt=conn.createStatement();
-            String val=search.getText();
+            String categoryVal=category_search.getText();
+            String nameVal= name_search.getText();
+            String priceVal= price_search_min.getText();
+            String priveValMax= price_search_max.getText();
             
-            String sql=" select * from inventory where Name = '"+val+"' OR Category= '"+val+"' ";
+            String sql=" select * from inventory where Name LIKE '%"+nameVal+"%' and Category LIKE '%"+categoryVal+"%' and Price between '"+priceVal+"' and '"+priveValMax+"' ";
             rs=stmt.executeQuery(sql);
             jTable1.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
@@ -390,7 +515,7 @@ public class home extends javax.swing.JFrame {
         price.setText("");
         threshold.setText("");
         quantity.setText("");
-        search.setText("");
+        category_search.setText("");
         jProgressBar1.setValue(0);
         jProgressBar1.setString("");
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -527,6 +652,82 @@ public class home extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_sortActionPerformed
 
+    private void PieChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PieChartActionPerformed
+        // TODO add your handling code here:
+       String Name=name.getText();
+       String Category =category.getText();
+       String Price =price.getText();
+       String Quantity =quantity.getText();
+       String Threshold =threshold.getText();
+       
+        DefaultPieDataset pieDataSet = new DefaultPieDataset();
+        pieDataSet.setValue("Price", new Integer(Price));
+        pieDataSet.setValue("Quantity", new Integer(Quantity));
+        pieDataSet.setValue("Threshold", new Integer(Threshold));
+        JFreeChart chart= ChartFactory.createPieChart3D(Name+" ("+Category+")", pieDataSet, true, true, true);
+        PiePlot3D P=(PiePlot3D)chart.getPlot();
+        ChartFrame frame=new ChartFrame("PIE CHART", chart);
+        frame.setVisible(true);
+        frame.setSize(450,500);
+        
+       
+        
+        
+        
+    }//GEN-LAST:event_PieChartActionPerformed
+
+    private void BarChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BarChartActionPerformed
+        // TODO add your handling code here:
+        String Name=name.getText();
+       String Category =category.getText();
+       String Price =price.getText();
+       String Quantity =quantity.getText();
+       String Threshold =threshold.getText();
+       DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+       dataset.setValue(new Integer(Quantity), "AMOUNT", "Quantity");
+       dataset.setValue(new Integer(Threshold), "AMOUNT", "Threshold");
+       
+       JFreeChart chart= ChartFactory.createBarChart(Name+" ("+Category+")","Parameters","Amount",  dataset, PlotOrientation.VERTICAL, true, true, true);
+     
+       chart.setBackgroundPaint(Color.YELLOW);
+       chart.getTitle().setPaint(Color.red);
+       CategoryPlot p= chart.getCategoryPlot();
+       ChartFrame frame= new ChartFrame(" Bar chart ", chart);
+       frame.setVisible(true);
+       frame.setSize(450,350);
+      
+       
+       
+       
+        
+    }//GEN-LAST:event_BarChartActionPerformed
+
+    private void QueryChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_QueryChartActionPerformed
+        // TODO add your handling code here:
+        try{
+          String query = "SELECT name, price FROM inventory";
+          JDBCCategoryDataset dataset = new JDBCCategoryDataset(databaseConnection.connection(), query);
+          JFreeChart chart= ChartFactory.createLineChart("query chart", "NAME","PRICE" , dataset, PlotOrientation.VERTICAL, true, true,true);
+          BarRenderer renderer=null;
+          CategoryPlot plot =null;
+          renderer =new BarRenderer();
+          ChartFrame frame= new ChartFrame("Query Chart", chart);
+           frame.setVisible(true);
+            frame.setSize(450,650);
+          
+          
+          
+          
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }//GEN-LAST:event_QueryChartActionPerformed
+
+    private void price_search_maxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_price_search_maxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_price_search_maxActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -563,8 +764,12 @@ public class home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BarChart;
+    private javax.swing.JButton PieChart;
+    private javax.swing.JButton QueryChart;
     private javax.swing.JButton SearchButton;
     private javax.swing.JTextField category;
+    private javax.swing.JTextField category_search;
     private javax.swing.JButton delete;
     private javax.swing.JTextField id;
     private javax.swing.JButton insert;
@@ -574,20 +779,27 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField name;
+    private javax.swing.JTextField name_search;
     private javax.swing.JTextField price;
+    private javax.swing.JTextField price_search_max;
+    private javax.swing.JTextField price_search_min;
     private javax.swing.JTextField quantity;
-    private javax.swing.JTextField search;
     private javax.swing.JButton sort;
     private javax.swing.JTextField threshold;
     private javax.swing.JButton update;
